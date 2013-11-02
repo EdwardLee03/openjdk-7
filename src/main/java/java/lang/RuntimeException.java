@@ -26,7 +26,13 @@
 package java.lang;
 
 /**
- * {@code RuntimeException} is the superclass of those
+ * {@code RuntimeException}是在JVM正常操作下被抛出的这些异常的超类。
+ * 
+ * <p>{@code RuntimeException}及其子类是不可控异常。
+ * 不可控异常并不需要在方法或构造器的{@code throws}语句中被声明，
+ * 尽管这些方法执行时可能抛出这些异常。
+ * 
+ * <p>{@code RuntimeException} is the superclass of those
  * exceptions that can be thrown during the normal operation of the
  * Java Virtual Machine.
  *
@@ -43,6 +49,10 @@ package java.lang;
 public class RuntimeException extends Exception {
     static final long serialVersionUID = -7034897190745766939L;
 
+    /*
+     * 相关API文档注释，见Throwable类定义
+     */
+    
     /** Constructs a new runtime exception with {@code null} as its
      * detail message.  The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.

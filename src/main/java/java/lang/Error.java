@@ -26,14 +26,21 @@
 package java.lang;
 
 /**
- * An {@code Error} is a subclass of {@code Throwable}
+ * 错误表示发生了严重的系统问题，继承自{@code Throwable}类。
+ * 一个合理的应用程序不应该试图去处理(捕获和抛出)它。
+ * 
+ * <p>一个方法不需要在其{@code throws}语句中声明任何{@code Error}的子类。
+ * 
+ * <p>{@code Error}及其子类被视为不可控异常。
+ * 
+ * <p>An {@code Error} is a subclass of {@code Throwable}
  * that indicates serious problems that a reasonable application
  * should not try to catch. Most such errors are abnormal conditions.
  * The {@code ThreadDeath} error, though a "normal" condition,
  * is also a subclass of {@code Error} because most applications
  * should not try to catch it.
- * <p>
- * A method is not required to declare in its {@code throws}
+ * 
+ * <p>A method is not required to declare in its {@code throws}
  * clause any subclasses of {@code Error} that might be thrown
  * during the execution of the method but not caught, since these
  * errors are abnormal conditions that should never occur.
@@ -49,6 +56,10 @@ package java.lang;
 public class Error extends Throwable {
     static final long serialVersionUID = 4980196508277280342L;
 
+    /*
+     * 相关API文档注释，见Throwable类定义
+     */
+    
     /**
      * Constructs a new error with {@code null} as its detail message.
      * The cause is not initialized, and may subsequently be initialized by a

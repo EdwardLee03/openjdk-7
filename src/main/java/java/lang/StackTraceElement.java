@@ -28,7 +28,16 @@ package java.lang;
 import java.util.Objects;
 
 /**
- * An element in a stack trace, as returned by {@link
+ * 一个栈踪迹元素，由{@link Throwable#getStackTrace()}返回。
+ * 每个元素表示一个栈帧(Stack Frame)。
+ * 
+ * <p>所有栈帧，除了栈中最顶端的那个栈帧，表示一个方法调用。
+ * 最顶端的那个栈帧表示程序的执行点，该执行点由栈踪迹生成。
+ * 
+ * <p>通常，该对象表示栈踪迹中可抛出对象的一个执行点。
+ * 
+ * 
+ * <p>An element in a stack trace, as returned by {@link
  * Throwable#getStackTrace()}.  Each element represents a single stack frame.
  * All stack frames except for the one at the top of the stack represent
  * a method invocation.  The frame at the top of the stack represents the
@@ -41,23 +50,25 @@ import java.util.Objects;
  */
 public final class StackTraceElement implements java.io.Serializable {
     // Normally initialized by VM (public constructor added in 1.5)
-    private String declaringClass;
-    private String methodName;
-    private String fileName;
-    private int    lineNumber;
+    private String declaringClass;	// 类的全路径名
+    private String methodName;		// 执行点所在的方法名
+    private String fileName;		// 文件名
+    private int    lineNumber;		// 行号
 
     /**
-     * Creates a stack trace element representing the specified execution
+     * 创建一个栈踪迹元素，用于表示特定的执行点。
+     * 
+     * <p>Creates a stack trace element representing the specified execution
      * point.
      *
-     * @param declaringClass the fully qualified name of the class containing
+     * @param declaringClass 类的全路径名 the fully qualified name of the class containing
      *        the execution point represented by the stack trace element
-     * @param methodName the name of the method containing the execution point
+     * @param methodName 执行的方法名 the name of the method containing the execution point
      *        represented by the stack trace element
-     * @param fileName the name of the file containing the execution point
+     * @param fileName 方法所在的文件名 the name of the file containing the execution point
      *         represented by the stack trace element, or {@code null} if
      *         this information is unavailable
-     * @param lineNumber the line number of the source line containing the
+     * @param lineNumber 方法所在的源码文件行号 the line number of the source line containing the
      *         execution point represented by this stack trace element, or
      *         a negative number if this information is unavailable. A value
      *         of -2 indicates that the method containing the execution point
@@ -75,7 +86,9 @@ public final class StackTraceElement implements java.io.Serializable {
     }
 
     /**
-     * Returns the name of the source file containing the execution point
+     * 返回执行点所在的源码文件名。
+     * 
+     * <p>Returns the name of the source file containing the execution point
      * represented by this stack trace element.  Generally, this corresponds
      * to the {@code SourceFile} attribute of the relevant {@code class}
      * file (as per <i>The Java Virtual Machine Specification</i>, Section
@@ -91,7 +104,9 @@ public final class StackTraceElement implements java.io.Serializable {
     }
 
     /**
-     * Returns the line number of the source line containing the execution
+     * 返回执行点所在的源码文件行号。
+     * 
+     * <p>Returns the line number of the source line containing the execution
      * point represented by this stack trace element.  Generally, this is
      * derived from the {@code LineNumberTable} attribute of the relevant
      * {@code class} file (as per <i>The Java Virtual Machine
@@ -106,7 +121,9 @@ public final class StackTraceElement implements java.io.Serializable {
     }
 
     /**
-     * Returns the fully qualified name of the class containing the
+     * 返回执行点所在的类的全路径名。
+     * 
+     * <p>Returns the fully qualified name of the class containing the
      * execution point represented by this stack trace element.
      *
      * @return the fully qualified name of the {@code Class} containing
@@ -117,7 +134,9 @@ public final class StackTraceElement implements java.io.Serializable {
     }
 
     /**
-     * Returns the name of the method containing the execution point
+     * 返回执行点所在的方法名。
+     * 
+     * <p>Returns the name of the method containing the execution point
      * represented by this stack trace element.  If the execution point is
      * contained in an instance or class initializer, this method will return
      * the appropriate <i>special method name</i>, {@code <init>} or
@@ -132,7 +151,9 @@ public final class StackTraceElement implements java.io.Serializable {
     }
 
     /**
-     * Returns true if the method containing the execution point
+     * 返回{@code true}，表示执行点所在的方法是一个本地方法。
+     * 
+     * <p>Returns true if the method containing the execution point
      * represented by this stack trace element is a native method.
      *
      * @return {@code true} if the method containing the execution point
@@ -143,7 +164,12 @@ public final class StackTraceElement implements java.io.Serializable {
     }
 
     /**
-     * Returns a string representation of this stack trace element.  The
+     * 返回栈踪迹元素的字符串表示。
+     * 
+     * <p>根据"类全路径名+方法名"和"文件名+行号"，可以快速定位执行点，即异常是从哪里抛出来的。
+     * 示例：{@code "MyClass.mash(MyClass.java:9)"}
+     * 
+     * <p>Returns a string representation of this stack trace element.  The
      * format of this string depends on the implementation, but the following
      * examples may be regarded as typical:
      * <ul>
@@ -168,6 +194,7 @@ public final class StackTraceElement implements java.io.Serializable {
      * </ul>
      * @see    Throwable#printStackTrace()
      */
+    @Override
     public String toString() {
         return getClassName() + "." + methodName +
             (isNativeMethod() ? "(Native Method)" :
@@ -195,12 +222,14 @@ public final class StackTraceElement implements java.io.Serializable {
      *         {@code StackTraceElement} instance representing the same
      *         execution point as this instance.
      */
+    @Override
     public boolean equals(Object obj) {
-        if (obj==this)
-            return true;
-        if (!(obj instanceof StackTraceElement))
-            return false;
-        StackTraceElement e = (StackTraceElement)obj;
+		if (obj == this)
+			return true;
+		if (!(obj instanceof StackTraceElement))
+			return false;
+		
+		StackTraceElement e = (StackTraceElement) obj;
         return e.declaringClass.equals(declaringClass) &&
             e.lineNumber == lineNumber &&
             Objects.equals(methodName, e.methodName) &&
@@ -210,6 +239,7 @@ public final class StackTraceElement implements java.io.Serializable {
     /**
      * Returns a hash code value for this stack trace element.
      */
+    @Override
     public int hashCode() {
         int result = 31*declaringClass.hashCode() + methodName.hashCode();
         result = 31*result + Objects.hashCode(fileName);

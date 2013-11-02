@@ -26,7 +26,14 @@
 package java.lang;
 
 /**
- * The class {@code Exception} and its subclasses are a form of
+ * {@code Exception}及其子类表示发生了一个不是严重的系统问题，继承自Throwable类。
+ * 一个合理的应用程序可能需要处理这些异常。
+ * 
+ * <p>{@code Exception}及其子类，不包括{@link RuntimeException}子类，被视为可控异常。
+ * 可控异常需要在方法和构造器的{@code throws}语句中声明，只要它们可能会在方法执行时被抛出，
+ * 这样可以将异常传播到上一层方法。
+ * 
+ * <p>The class {@code Exception} and its subclasses are a form of
  * {@code Throwable} that indicates conditions that a reasonable
  * application might want to catch.
  *
@@ -45,6 +52,10 @@ package java.lang;
 public class Exception extends Throwable {
     static final long serialVersionUID = -3387516993124229948L;
 
+    /*
+     * 相关API文档注释，见Throwable类定义
+     */
+    
     /**
      * Constructs a new exception with {@code null} as its detail message.
      * The cause is not initialized, and may subsequently be initialized by a
