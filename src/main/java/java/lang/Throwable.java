@@ -369,7 +369,7 @@ public class Throwable implements Serializable {
      */
     public Throwable(Throwable cause) {
         fillInStackTrace();
-        detailMessage = (cause==null ? null : cause.toString());
+        detailMessage = (cause==null ? null : cause.toString()); // 赋予异常源的字符串表示为具体错误信息
         this.cause = cause;
     }
 
@@ -531,7 +531,7 @@ public class Throwable implements Serializable {
     }
 
     /**
-     * 返回该可抛出对象的简短说明（类名[: 具体错误信息]）。
+     * 返回该可抛出对象的简短说明（类全路径名[: 具体错误信息]）。
      * 
      * <p>Returns a short description of this throwable.
      * The result is the concatenation of:

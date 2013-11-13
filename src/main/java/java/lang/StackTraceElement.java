@@ -86,6 +86,46 @@ public final class StackTraceElement implements java.io.Serializable {
     }
 
     /**
+     * 返回栈踪迹元素的字符串表示。
+     * 
+     * <p>根据"类全路径名+方法名"和"文件名+行号"，可以快速定位执行点，即异常是从哪里抛出来的。
+     * 示例：{@code "MyClass.mash(MyClass.java:9)"}
+     * 
+     * <p>Returns a string representation of this stack trace element.  The
+     * format of this string depends on the implementation, but the following
+     * examples may be regarded as typical:
+     * <ul>
+     * <li>
+     *   {@code "MyClass.mash(MyClass.java:9)"} - Here, {@code "MyClass"}
+     *   is the <i>fully-qualified name</i> of the class containing the
+     *   execution point represented by this stack trace element,
+     *   {@code "mash"} is the name of the method containing the execution
+     *   point, {@code "MyClass.java"} is the source file containing the
+     *   execution point, and {@code "9"} is the line number of the source
+     *   line containing the execution point.
+     * <li>
+     *   {@code "MyClass.mash(MyClass.java)"} - As above, but the line
+     *   number is unavailable.
+     * <li>
+     *   {@code "MyClass.mash(Unknown Source)"} - As above, but neither
+     *   the file name nor the line  number are available.
+     * <li>
+     *   {@code "MyClass.mash(Native Method)"} - As above, but neither
+     *   the file name nor the line  number are available, and the method
+     *   containing the execution point is known to be a native method.
+     * </ul>
+     * @see    Throwable#printStackTrace()
+     */
+    @Override
+    public String toString() {
+        return getClassName() + "." + methodName +
+            (isNativeMethod() ? "(Native Method)" :
+             (fileName != null && lineNumber >= 0 ?
+              "(" + fileName + ":" + lineNumber + ")" :
+              (fileName != null ?  "("+fileName+")" : "(Unknown Source)")));
+    }
+
+    /**
      * 返回执行点所在的源码文件名。
      * 
      * <p>Returns the name of the source file containing the execution point
@@ -161,46 +201,6 @@ public final class StackTraceElement implements java.io.Serializable {
      */
     public boolean isNativeMethod() {
         return lineNumber == -2;
-    }
-
-    /**
-     * 返回栈踪迹元素的字符串表示。
-     * 
-     * <p>根据"类全路径名+方法名"和"文件名+行号"，可以快速定位执行点，即异常是从哪里抛出来的。
-     * 示例：{@code "MyClass.mash(MyClass.java:9)"}
-     * 
-     * <p>Returns a string representation of this stack trace element.  The
-     * format of this string depends on the implementation, but the following
-     * examples may be regarded as typical:
-     * <ul>
-     * <li>
-     *   {@code "MyClass.mash(MyClass.java:9)"} - Here, {@code "MyClass"}
-     *   is the <i>fully-qualified name</i> of the class containing the
-     *   execution point represented by this stack trace element,
-     *   {@code "mash"} is the name of the method containing the execution
-     *   point, {@code "MyClass.java"} is the source file containing the
-     *   execution point, and {@code "9"} is the line number of the source
-     *   line containing the execution point.
-     * <li>
-     *   {@code "MyClass.mash(MyClass.java)"} - As above, but the line
-     *   number is unavailable.
-     * <li>
-     *   {@code "MyClass.mash(Unknown Source)"} - As above, but neither
-     *   the file name nor the line  number are available.
-     * <li>
-     *   {@code "MyClass.mash(Native Method)"} - As above, but neither
-     *   the file name nor the line  number are available, and the method
-     *   containing the execution point is known to be a native method.
-     * </ul>
-     * @see    Throwable#printStackTrace()
-     */
-    @Override
-    public String toString() {
-        return getClassName() + "." + methodName +
-            (isNativeMethod() ? "(Native Method)" :
-             (fileName != null && lineNumber >= 0 ?
-              "(" + fileName + ":" + lineNumber + ")" :
-              (fileName != null ?  "("+fileName+")" : "(Unknown Source)")));
     }
 
     /**
