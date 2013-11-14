@@ -57,7 +57,9 @@ public class Exception extends Throwable {
      */
     
     /**
-     * Constructs a new exception with {@code null} as its detail message.
+     * 创建一个不包含具体错误状态信息(为空)和异常源的异常对象。
+     * 
+     * <p>Constructs a new exception with {@code null} as its detail message.
      * The cause is not initialized, and may subsequently be initialized by a
      * call to {@link #initCause}.
      */
@@ -66,7 +68,9 @@ public class Exception extends Throwable {
     }
 
     /**
-     * Constructs a new exception with the specified detail message.  The
+     * 创建一个包含程序错误状态信息的异常，但异常源为空。
+     * 
+     * <p>Constructs a new exception with the specified detail message.  The
      * cause is not initialized, and may subsequently be initialized by
      * a call to {@link #initCause}.
      *
@@ -78,7 +82,10 @@ public class Exception extends Throwable {
     }
 
     /**
-     * Constructs a new exception with the specified detail message and
+     * 创建一个包含具体错误状态信息和异常源的可抛出对象。
+     * （注意：异常源的错误信息并不会自动合并到这个可抛出对象的具体错误信息中！）
+     * 
+     * <p>Constructs a new exception with the specified detail message and
      * cause.  <p>Note that the detail message associated with
      * {@code cause} is <i>not</i> automatically incorporated in
      * this exception's detail message.
@@ -96,7 +103,11 @@ public class Exception extends Throwable {
     }
 
     /**
-     * Constructs a new exception with the specified cause and a detail
+     * 创建一个包含异常源和来自异常源的具体错误状态信息的可抛出对象。
+     * 
+     * 当可抛出对象直接包装其他可抛出对象时，这个构造器非常有用。
+     * 
+     * <p>Constructs a new exception with the specified cause and a detail
      * message of <tt>(cause==null ? null : cause.toString())</tt> (which
      * typically contains the class and detail message of <tt>cause</tt>).
      * This constructor is useful for exceptions that are little more than
@@ -114,7 +125,9 @@ public class Exception extends Throwable {
     }
 
     /**
-     * Constructs a new exception with the specified detail message,
+     * 创建一个包含具体错误状态信息和异常源、具有可禁用和可写入栈踪迹选项的可抛出对象。（JDK 7引入）
+     * 
+     * <p>Constructs a new exception with the specified detail message,
      * cause, suppression enabled or disabled, and writable stack
      * trace enabled or disabled.
      *

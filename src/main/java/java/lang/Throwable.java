@@ -159,7 +159,10 @@ public class Throwable implements Serializable {
     private transient Object backtrace;
 
     /**
-     * 具体错误信息
+     * 具体错误信息。
+     * 
+     * <p>如 {@code FileNotFoundException} 异常，其错误信息
+     * 包含未找到文件的文件名。
      * 
      * <p>Specific details about the Throwable.  For example, for
      * {@code FileNotFoundException}, this contains the name of
@@ -195,10 +198,6 @@ public class Throwable implements Serializable {
             new StackTraceElement[] {STACK_TRACE_ELEMENT_SENTINEL};
     }
 
-    /**
-     * A shared value for an empty stack.
-     */
-    private static final StackTraceElement[] UNASSIGNED_STACK = new StackTraceElement[0];
 
     /*
      * 保证可抛出的对象是不可变的，且是线程安全的。
@@ -211,9 +210,11 @@ public class Throwable implements Serializable {
      *
      * 1) The fields are initialized to a non-null sentinel value
      * which indicates the value has logically not been set.
+     * 字段值被初始化为非空警戒值（暗示逻辑上不可能被设置为这个值）
      *
      * 2) Writing a null to the field indicates further writes
      * are forbidden
+     * 写入null值到字段，就意味着未来写入操作被禁止。
      *
      * 3) The sentinel value may be replaced with another non-null
      * value.
@@ -228,8 +229,12 @@ public class Throwable implements Serializable {
      * change.
      */
 
+
     /**
      * 异常源，导致当前异常的异常。
+     * 或者为null，表示根异常，即产生异常行为的根源。
+     * 
+     * <p>如果该字段等于自身，表示该可抛出对象的异常源未被初始化。
      * 
      * <p>The throwable that caused this throwable to get thrown, or null if this
      * throwable was not caused by another throwable, or if the causative
@@ -243,7 +248,15 @@ public class Throwable implements Serializable {
     private Throwable cause = this;
 
     /**
+     * A shared value for an empty stack.
+     */
+    private static final StackTraceElement[] UNASSIGNED_STACK = new StackTraceElement[0];
+
+    /**
      * 栈踪迹（stack trace）信息，由{@link #getStackTrace()}返回。
+     * 
+     * <p>如果该字段为null，表示调用 {@link #setStackTrace(StackTraceElement[])} 和
+     * {@link #fillInStackTrace()} 方法的一系列操作未执行。
      * 
      * <p>The stack trace, as returned by {@link #getStackTrace()}.
      *
@@ -276,6 +289,7 @@ public class Throwable implements Serializable {
      */
     private List<Throwable> suppressedExceptions = SUPPRESSED_SENTINEL;
 
+
     /** Message for trying to suppress a null exception. */
     private static final String NULL_CAUSE_MESSAGE = "Cannot suppress a null exception.";
 
@@ -289,8 +303,12 @@ public class Throwable implements Serializable {
     private static final String SUPPRESSED_CAPTION = "Suppressed: ";
 
     /**
-     * 创建一个具体错误信息为{@code null}的可抛出对象。
+     * 创建一个可抛出的对象，其程序错误状态信息和异常源都为空。
      * 异常源可通过调用{@link #initCause}方法来初始化。
+     * 
+     * <p>适用场景：异常程序无须传达一些关键的状态信息，根据异常类型名就知道发生了什么错误，且状态单一。
+     * 如 {@link NullPointerException}，它表示调用了null对象的字段或方法。
+     * 用户自定义的异常类不适合使用这种方式构造，因为这样做的话会丢失整个父异常栈踪迹信息（"Caused by: "）。
      * 
      * <p>Constructs a new throwable with {@code null} as its detail message.
      * The cause is not initialized, and may subsequently be initialized by a
@@ -304,7 +322,14 @@ public class Throwable implements Serializable {
     }
 
     /**
-     * Constructs a new throwable with the specified detail message.  The
+     * 创建一个包含具体错误状态信息的可抛出对象，但异常源为空。
+     * 
+     * <p>适用场景：其可传达一些关键的程序错误状态信息，且是程序发生异常的根源，非常适用于参数有效性的检查操作。
+     * 如JDK大量使用 {@link IllegalArgumentException} ，表示方法参数值非法或不合理。
+     * 因为JDK自动的非法参数异常属于运行时异常，应用程序不应该捕获它。
+     * 大型应用程序都使用自定义的异常，通过定义类似的构造方法来实现类似功能。
+     * 
+     * <p>Constructs a new throwable with the specified detail message.  The
      * cause is not initialized, and may subsequently be initialized by
      * a call to {@link #initCause}.
      *
@@ -320,8 +345,11 @@ public class Throwable implements Serializable {
     }
 
     /**
-     * 创建一个给定具体错误信息和异常源的可抛出对象。
-     * 注意：异常源的错误信息并不会自动合并到这个可抛出对象的具体错误信息中！
+     * 创建一个包含具体错误状态信息和异常源的可抛出对象。
+     * （注意：异常源的错误信息并不会自动合并到这个可抛出对象的具体错误信息中！）
+     * 
+     * <p>适用场景：非常适用于应用程序向上传递异常的同时，记录当前程序的一些关键错误状态信息。
+     * 所以，对应用程序自定义的异常非常适合，既能知道底层发生了什么，也能知晓当前执行点的上下文状态。
      * 
      * <p>调用{@link #fillInStackTrace()}方法，是为了初始化新创建的可抛出对象的栈踪迹数据。
      * 
@@ -348,8 +376,10 @@ public class Throwable implements Serializable {
     }
 
     /**
-     * 创建一个给定异常源和来自异常源的具体错误信息的可抛出对象。
-     * 当可抛出对象直接包装其他可抛出对象时，这个构造器非常有用。
+     * 创建一个包含异常源和来自异常源的具体错误状态信息的可抛出对象。
+     * 
+     * <p>适用场景：当可抛出对象直接包装其他可抛出对象时，这个构造器非常有用。
+     * 优点是它通过包装对异常类型进行转换，缺点是其与父异常包含相同的错误状态信息。
      * 
      * <p>Constructs a new throwable with the specified cause and a detail
      * message of {@code (cause==null ? null : cause.toString())} (which
